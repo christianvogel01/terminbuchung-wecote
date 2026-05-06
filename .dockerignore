@@ -1,0 +1,7 @@
+.git
+.gitignore
+vendor
+db.php
+mail_config.php
+*.zip
+.DS_Store
