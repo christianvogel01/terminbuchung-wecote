@@ -2,7 +2,7 @@
 $host = "localhost";
 $dbname = "terminbuchung";
 $username = "terminuser";
-$password = "TerminPasswort123!";
+$password = "HIER_PASSWORT_EINTRAGEN";
 
 try {
     $pdo = new PDO(
@@ -13,11 +13,5 @@ try {
 
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
-    http_response_code(500);
-    echo json_encode([
-        "success" => false,
-        "message" => "Datenbankverbindung fehlgeschlagen."
-    ]);
-    exit;
+    die("Datenbankverbindung fehlgeschlagen.");
 }
-?>

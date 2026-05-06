@@ -14,21 +14,41 @@ if (!$date) {
     exit;
 }
 
-$stmt = $pdo->prepare("
-    SELECT appointment_time 
-    FROM bookings 
-    WHERE appointment_date = :date
-");
+try {
+    if ($excludeId) {
+        $stmt = $pdo->prepare("
+            SELECT appointment_time
+            FROM bookings
+            WHERE appointment_date = :date
+            AND id != :exclude_id
+        ");
 
-$stmt->execute([
-    ":date" => $date
-]);
+        $stmt->execute([
+            ":date" => $date,
+            ":exclude_id" => $excludeId
+        ]);
+    } else {
+        $stmt = $pdo->prepare("
+            SELECT appointment_time
+            FROM bookings
+            WHERE appointment_date = :date
+        ");
 
-$bookedSlots = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $stmt->execute([
+            ":date" => $date
+        ]);
+    }
 
-echo json_encode([
-    "success" => true,
-    "bookedSlots" => $bookedSlots
-]);
-?>
+    $bookedSlots = $stmt->fetchAll(PDO::FETCH_COLUMN);
 
+    echo json_encode([
+        "success" => true,
+        "bookedSlots" => $bookedSlots
+    ]);
+} catch (PDOException $e) {
+    http_response_code(500);
+    echo json_encode([
+        "success" => false,
+        "message" => "Die verfügbaren Zeiten konnten nicht geladen werden."
+    ]);
+}

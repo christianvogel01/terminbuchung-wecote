@@ -8,3 +8,6 @@ test_mail.php
 true,
 terminbuchung-wecote/
 mail_config.php
+db.php
+vendor/
+index_backup.php
