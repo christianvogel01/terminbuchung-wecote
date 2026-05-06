@@ -1,0 +1,142 @@
+<?php
+session_start();
+require_once "db.php";
+
+if (!isset($_SESSION["patient_id"])) {
+    header("Location: login.php");
+    exit;
+}
+
+$patientId = $_SESSION["patient_id"];
+$patientName = $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_name"];
+$initial = strtoupper(substr($_SESSION["patient_first_name"], 0, 1));
+
+$stmt = $pdo->prepare("
+    SELECT id, appointment_date, appointment_time, reason, created_at
+    FROM bookings
+    WHERE patient_id = :patient_id
+    ORDER BY appointment_date, appointment_time
+");
+$stmt->execute([":patient_id" => $patientId]);
+$bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+$message = "";
+$messageType = "";
+
+if (isset($_GET["cancelled"])) {
+    $message = "Der Termin wurde erfolgreich storniert.";
+    $messageType = "success";
+}
+
+if (isset($_GET["error"]) && $_GET["error"] === "too_late") {
+    $message = "Dieser Termin kann nicht mehr online storniert werden, da er in weniger als 24 Stunden stattfindet.";
+    $messageType = "error";
+}
+
+if (isset($_GET["error"]) && $_GET["error"] === "notfound") {
+    $message = "Der Termin wurde nicht gefunden.";
+    $messageType = "error";
+}
+
+function canCancelBooking($date, $time) {
+    $appointmentTimestamp = strtotime($date . " " . $time);
+    $limitTimestamp = time() + (24 * 60 * 60);
+
+    return $appointmentTimestamp > $limitTimestamp;
+}
+?>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Meine Buchungen – Praxis Dr. Müller</title>
+  <link rel="stylesheet" href="styles.css?v=31">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.php">
+      <span class="brand-icon">+</span>
+      <span>
+        <strong>Praxis Dr. Müller</strong>
+        <small>Meine Buchungen</small>
+      </span>
+    </a>
+
+    <nav class="nav">
+      <div class="profile-menu">
+        <div class="profile-button" aria-label="Profilmenü">
+          <span class="avatar"><?= htmlspecialchars($initial) ?></span>
+          <span><?= htmlspecialchars($patientName) ?></span>
+          <span>▾</span>
+        </div>
+
+        <div class="profile-dropdown">
+          <a href="profile.php">Mein Profil</a>
+          <a href="logout.php">Logout</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>Meine gebuchten Termine</h2>
+      <p class="intro-text">
+        Hier sehen Sie alle Termine, die für Ihr Patientenkonto gespeichert wurden.
+        Termine können bis 24 Stunden vor Beginn online storniert werden.
+      </p>
+
+      <?php if ($message): ?>
+        <div class="message <?= htmlspecialchars($messageType) ?>" style="display:block;">
+          <?= htmlspecialchars($message) ?>
+        </div>
+      <?php endif; ?>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Uhrzeit</th>
+            <th>Grund</th>
+            <th>Gebucht am</th>
+            <th>Aktion</th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($bookings as $booking): ?>
+            <?php $canCancel = canCancelBooking($booking["appointment_date"], $booking["appointment_time"]); ?>
+
+            <tr>
+              <td><?= htmlspecialchars($booking["appointment_date"]) ?></td>
+              <td><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?></td>
+              <td><?= htmlspecialchars($booking["reason"] ?? "") ?></td>
+              <td><?= htmlspecialchars($booking["created_at"]) ?></td>
+              <td>
+                <?php if ($canCancel): ?>
+                  <form method="POST" action="cancel_my_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
+                    <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                    <button class="danger-action" type="submit">Stornieren</button>
+                  </form>
+                <?php else: ?>
+                  <span class="muted-text">Nicht mehr online stornierbar</span>
+                <?php endif; ?>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+
+          <?php if (count($bookings) === 0): ?>
+            <tr>
+              <td colspan="5">Sie haben noch keine Termine gebucht.</td>
+            </tr>
+          <?php endif; ?>
+        </tbody>
+      </table>
+
+      <div class="table-action">
+        <a class="btn primary" href="booking.php">Neuen Termin buchen</a>
+      </div>
+    </section>
+  </main>
+  <script src="auto_logout_on_reload.js?v=1"></script>
+</body>
+</html>

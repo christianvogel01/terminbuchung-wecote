@@ -72,5 +72,13 @@ $patientName = $isLoggedIn
       </section>
     </main>
   </div>
+<script id="brand-home-script">
+document.querySelectorAll(".topbar .title").forEach(function(el) {
+  el.style.cursor = "pointer";
+  el.addEventListener("click", function() {
+    window.location.href = "index.php";
+  });
+});
+</script>
 </body>
 </html>

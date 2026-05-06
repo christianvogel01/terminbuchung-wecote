@@ -21,7 +21,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $date = $_POST["appointment_date"] ?? "";
     $time = $_POST["appointment_time"] ?? "";
     $reason = trim($_POST["reason"] ?? "");
-    $phone = trim($_POST["phone"] ?? "");
 
     if (!$date || !$time) {
         $message = "Datum und Uhrzeit sind Pflichtfelder.";
@@ -32,8 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 UPDATE bookings
                 SET appointment_date = :date,
                     appointment_time = :time,
-                    reason = :reason,
-                    phone = :phone
+                    reason = :reason
                 WHERE id = :id
             ");
 
@@ -41,7 +39,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 ":date" => $date,
                 ":time" => $time,
                 ":reason" => $reason,
-                ":phone" => $phone,
                 ":id" => $id
             ]);
 
@@ -71,54 +68,92 @@ if (!$booking) {
     header("Location: admin.php");
     exit;
 }
+
+$currentTime = substr($booking["appointment_time"], 0, 5);
 ?>
 <!DOCTYPE html>
 <html lang="de">
 <head>
   <meta charset="UTF-8">
   <title>Termin bearbeiten – Praxis Dr. Müller</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=100">
 </head>
 <body>
-  <div class="page">
-    <header class="topbar">
-      <div class="title">
-        <h1>Praxis Dr. Müller</h1>
-        <p>Termin bearbeiten</p>
+  <header class="topbar">
+    <a class="brand" href="admin.php">
+      <span class="brand-icon">+</span>
+      <span>
+        <strong>Praxis Dr. Müller</strong>
+        <small>Termin bearbeiten</small>
+      </span>
+    </a>
+
+    <nav class="nav">
+      <div class="profile-menu">
+        <div class="profile-button" aria-label="Praxismenü">
+          <span class="avatar">P</span>
+          <span>Praxis</span>
+          <span>▾</span>
+        </div>
+
+        <div class="profile-dropdown">
+          <a href="admin.php">Dashboard</a>
+          <a href="admin_calendar.php?view=week">Kalenderansicht</a>
+          <a href="index.php">Startseite</a>
+          <a href="admin_logout.php">Logout</a>
+        </div>
       </div>
+    </nav>
+  </header>
 
-      <nav class="header-actions">
-        <a class="header-link" href="admin.php">Zurück zum Dashboard</a>
-      </nav>
-    </header>
+  <main class="container">
+    <section class="card">
+      <h2>1. Datum auswählen</h2>
 
-    <main class="container narrow">
-      <section class="card">
-        <h2>Termin bearbeiten</h2>
+      <?php if ($message): ?>
+        <div class="message <?= htmlspecialchars($messageType) ?>" style="display:block;">
+          <?= htmlspecialchars($message) ?>
+        </div>
+      <?php endif; ?>
 
-        <?php if ($message): ?>
-          <div class="message <?= htmlspecialchars($messageType) ?>" style="display:block;">
-            <?= htmlspecialchars($message) ?>
+      <form method="POST" action="edit_booking.php">
+        <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+
+        <div class="date-box">
+          <label for="editDateInput">Wählen Sie ein Datum für den Arzttermin</label>
+          <input
+            type="date"
+            name="appointment_date"
+            id="editDateInput"
+            value="<?= htmlspecialchars($booking["appointment_date"]) ?>"
+            required
+          >
+        </div>
+
+        <input
+          type="hidden"
+          name="appointment_time"
+          id="editTimeInput"
+          value="<?= htmlspecialchars($currentTime) ?>"
+          required
+        >
+
+        <section class="edit-time-section">
+          <h2>2. Verfügbare Zeiten</h2>
+
+          <div class="section-date" id="editDateLabel"></div>
+
+          <div class="selected-info" id="editSelectedInfo">
+            Aktuelle Uhrzeit: <?= htmlspecialchars($currentTime) ?> Uhr
           </div>
-        <?php endif; ?>
 
-        <form method="POST" action="edit_booking.php">
-          <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+          <div id="editSlotHint" class="hint">Verfügbare Zeiten werden geladen...</div>
+          <div id="editSlots"></div>
+        </section>
 
-          <label>
-            Datum
-            <input type="date" name="appointment_date" value="<?= htmlspecialchars($booking["appointment_date"]) ?>" required>
-          </label>
+        <section class="edit-details-section">
+          <h2>3. Angaben bearbeiten</h2>
 
-          <label>
-            Uhrzeit
-            <input type="time" name="appointment_time" value="<?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?>" required>
-          </label>
-
-          <label>
-            Telefon
-            <input type="tel" name="phone" value="<?= htmlspecialchars($booking["phone"] ?? "") ?>">
-          </label>
 
           <label>
             Grund
@@ -126,9 +161,14 @@ if (!$booking) {
           </label>
 
           <button class="book-btn" type="submit">Änderungen speichern</button>
-        </form>
-      </section>
-    </main>
-  </div>
+        </section>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    window.currentBookingId = <?= json_encode((int)$booking["id"]) ?>;
+  </script>
+  <script src="edit_booking_slots.js?v=100"></script>
 </body>
 </html>

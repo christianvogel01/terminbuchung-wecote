@@ -40,19 +40,33 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
 <head>
   <meta charset="UTF-8">
   <title>Praxis-Dashboard</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=40">
 </head>
 <body>
   <div class="page">
     <header class="topbar">
-      <div class="title">
-        <h1>Praxis Dr. Müller</h1>
-        <p>Praxis-Dashboard</p>
-      </div>
+      <a class="brand" href="index.php">
+        <span class="brand-icon">+</span>
+        <span>
+          <strong>Praxis Dr. Müller</strong>
+          <small>Praxis-Dashboard</small>
+        </span>
+      </a>
 
-      <nav class="header-actions">
-        <a class="header-link" href="index.php">Startseite</a>
-        <a class="header-button" href="admin_logout.php">Logout</a>
+      <nav class="nav">
+        <div class="profile-menu">
+          <div class="profile-button" aria-label="Praxismenü">
+            <span class="avatar">P</span>
+            <span>Praxis</span>
+            <span>▾</span>
+          </div>
+
+          <div class="profile-dropdown">
+            <a href="admin_calendar.php">Kalenderansicht</a>
+            <a href="index.php">Startseite</a>
+            <a href="admin_logout.php">Logout</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -149,5 +163,13 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
       </section>
     </main>
   </div>
+<script id="brand-home-script">
+document.querySelectorAll(".topbar .title").forEach(function(el) {
+  el.style.cursor = "pointer";
+  el.addEventListener("click", function() {
+    window.location.href = "index.php";
+  });
+});
+</script>
 </body>
 </html>

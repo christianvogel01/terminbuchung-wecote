@@ -3,6 +3,7 @@ header("Content-Type: application/json");
 require_once "db.php";
 
 $date = $_GET["date"] ?? "";
+$excludeId = $_GET["exclude_id"] ?? "";
 
 if (!$date) {
     http_response_code(400);

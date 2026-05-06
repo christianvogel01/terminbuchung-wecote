@@ -50,19 +50,31 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login – Praxis Dr. Müller</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=31">
 </head>
 <body>
   <div class="page">
     <header class="topbar">
-      <div class="title">
-        <h1>Praxis Dr. Müller</h1>
-        <p>Patientenlogin</p>
-      </div>
+      <a class="brand" href="index.php">
+        <span class="brand-icon">+</span>
+        <span>
+          <strong>Praxis Dr. Müller</strong>
+          <small>Patientenlogin</small>
+        </span>
+      </a>
 
-      <nav class="header-actions">
-        <a class="header-link" href="index.php">Startseite</a>
-        <a class="header-button" href="register.php">Registrieren</a>
+      <nav class="nav">
+        <div class="profile-menu">
+          <div class="profile-button" aria-label="Kontomenü">
+            <span class="avatar">+</span>
+            <span>Konto</span>
+            <span>▾</span>
+          </div>
+
+          <div class="profile-dropdown">
+            <a href="register.php">Registrieren</a>
+          </div>
+        </div>
       </nav>
     </header>
 
@@ -99,5 +111,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
       </section>
     </main>
   </div>
+<script id="brand-home-script">
+document.querySelectorAll(".topbar .title").forEach(function(el) {
+  el.style.cursor = "pointer";
+  el.addEventListener("click", function() {
+    window.location.href = "index.php";
+  });
+});
+</script>
 </body>
 </html>

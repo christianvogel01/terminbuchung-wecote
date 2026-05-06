@@ -7,6 +7,7 @@ if (!isset($_SESSION["patient_id"])) {
 }
 
 $patientName = $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_name"];
+$initial = strtoupper(substr($_SESSION["patient_first_name"], 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -14,76 +15,87 @@ $patientName = $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_n
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Termin buchen – Praxis Dr. Müller</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=40">
 </head>
 <body>
-  <div class="page">
-    <header class="topbar">
-      <div class="title">
-        <h1>Praxis Dr. Müller</h1>
-        <p>Terminbuchung</p>
+  <header class="topbar">
+    <a class="brand" href="index.php">
+      <span class="brand-icon">+</span>
+      <span>
+        <strong>Praxis Dr. Müller</strong>
+        <small>Terminbuchung</small>
+      </span>
+    </a>
+
+    <nav class="nav">
+      <div class="profile-menu">
+        <div class="profile-button" aria-label="Profilmenü">
+          <span class="avatar"><?= htmlspecialchars($initial) ?></span>
+          <span><?= htmlspecialchars($patientName) ?></span>
+          <span>▾</span>
+        </div>
+
+        <div class="profile-dropdown">
+          <a href="profile.php">Mein Profil</a>
+          <a href="my_bookings.php">Meine Buchungen</a>
+          <a href="logout.php">Logout</a>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="notice success-notice">
+      Sie sind angemeldet. Die Buchung wird Ihrem Patientenkonto zugeordnet.
+    </div>
+
+    <section class="card">
+      <h2>1. Datum auswählen</h2>
+
+      <div class="date-box">
+        <label for="dateInput">Wählen Sie ein Datum für Ihren Arzttermin</label>
+        <input type="date" id="dateInput">
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>2. Verfügbare Zeiten</h2>
+
+      <div class="section-date" id="selectedDateLabel">
+        Bitte wählen Sie zuerst ein Datum aus.
       </div>
 
-      <nav class="header-actions">
-        <a class="header-link" href="index.php">Startseite</a>
-        <span class="user-name"><?= htmlspecialchars($patientName) ?></span>
-        <a class="header-button" href="logout.php">Logout</a>
-      </nav>
-    </header>
-
-    <main class="container">
-      <div class="notice success-notice">
-        Sie sind angemeldet. Die Buchung wird Ihrem Patientenkonto zugeordnet.
+      <div id="slots">
+        <p class="hint">Noch kein Datum ausgewählt.</p>
       </div>
+    </section>
 
-      <section class="card">
-        <h2>1. Datum auswählen</h2>
-        <div class="date-box">
-          <label for="dateInput">Wählen Sie ein Datum für Ihren Arzttermin</label>
-          <input type="date" id="dateInput">
-        </div>
-      </section>
+    <section id="bookingForm" class="card booking-form hidden">
+      <h2>3. Termin bestätigen</h2>
 
-      <section class="card">
-        <div class="availability-header">
-          <h2>2. Verfügbare Zeiten</h2>
-        </div>
+      <div class="selected-info" id="selectedInfo"></div>
 
-        <div class="section-date" id="selectedDateLabel">
-          Bitte wählen Sie zuerst ein Datum aus.
-        </div>
+      <form id="patientForm">
+        <p class="intro-text">
+          Die Buchung wird für <strong><?= htmlspecialchars($patientName) ?></strong> gespeichert.
+        </p>
 
-        <div id="slots">
-          <p class="hint">Noch kein Datum ausgewählt.</p>
-        </div>
-      </section>
+        <label>
+          Grund des Termins
+          <textarea name="reason" rows="3" placeholder="z.B. Kontrolle, Beschwerden, Beratung"></textarea>
+        </label>
 
-      <section id="bookingForm" class="card booking-form hidden">
-        <h2>3. Termin bestätigen</h2>
+        <footer class="footer-action">
+          <button class="book-btn" type="submit">Termin verbindlich buchen</button>
+          <button class="cancel-btn" type="button" id="cancelBtn">Abbrechen</button>
+        </footer>
+      </form>
+    </section>
 
-        <div class="selected-info" id="selectedInfo"></div>
+    <div id="message" class="message"></div>
+  </main>
 
-        <form id="patientForm">
-          <p class="intro-text">
-            Die Buchung wird für <strong><?= htmlspecialchars($patientName) ?></strong> gespeichert.
-          </p>
-
-          <label>
-            Grund des Termins
-            <textarea name="reason" rows="3" placeholder="z.B. Kontrolle, Beschwerden, Beratung"></textarea>
-          </label>
-
-          <footer class="footer-action">
-            <button class="book-btn" type="submit">Termin verbindlich buchen</button>
-            <button class="cancel-btn" type="button" id="cancelBtn">Abbrechen</button>
-          </footer>
-        </form>
-      </section>
-
-      <div id="message" class="message"></div>
-    </main>
-  </div>
-
-  <script src="script.js"></script>
+  <script src="script.js?v=40"></script>
+  <script src="auto_logout_on_reload.js?v=1"></script>
 </body>
 </html>

@@ -5,6 +5,7 @@ $isLoggedIn = isset($_SESSION["patient_id"]);
 $patientName = $isLoggedIn
     ? $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_name"]
     : "";
+$initial = $isLoggedIn ? strtoupper(substr($_SESSION["patient_first_name"], 0, 1)) : "";
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -12,96 +13,100 @@ $patientName = $isLoggedIn
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Praxis Dr. Müller – Online-Terminbuchung</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=30">
 </head>
 <body>
-  <div class="page">
-    <header class="topbar">
-      <div class="title">
-        <h1>Praxis Dr. Müller</h1>
-        <p>Allgemeinmedizin</p>
+  <header class="topbar">
+    <a class="brand" href="index.php">
+      <span class="brand-icon">+</span>
+      <span>
+        <strong>Praxis Dr. Müller</strong>
+        <small>Allgemeinmedizin</small>
+      </span>
+    </a>
+
+    <nav class="nav">
+      <?php if ($isLoggedIn): ?>
+        <div class="profile-menu">
+          <div class="profile-button" aria-label="Profilmenü">
+            <span class="avatar"><?= htmlspecialchars($initial) ?></span>
+            <span><?= htmlspecialchars($patientName) ?></span>
+            <span>▾</span>
+          </div>
+
+          <div class="profile-dropdown">
+            <a href="profile.php">Mein Profil</a>
+            <a href="my_bookings.php">Meine Buchungen</a>
+            <a href="logout.php">Logout</a>
+          </div>
+        </div>
+      <?php else: ?>
+        <div class="profile-menu">
+          <div class="profile-button" aria-label="Kontomenü">
+            <span class="avatar">+</span>
+            <span>Konto</span>
+            <span>▾</span>
+          </div>
+
+          <div class="profile-dropdown">
+            <a href="login.php">Einloggen</a>
+            <a href="register.php">Registrieren</a>
+          </div>
+        </div>
+      <?php endif; ?>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Online-Terminbuchung</p>
+      <h1>Ihr Arzttermin in wenigen Klicks.</h1>
+      <p class="hero-text">
+        Registrieren, einloggen, freien Termin auswählen und direkt eine Bestätigung erhalten.
+      </p>
+
+      <div class="hero-actions">
+        <?php if ($isLoggedIn): ?>
+          <a class="btn primary" href="booking.php">Termin buchen</a>
+          <a class="btn light" href="my_bookings.php">Meine Buchungen</a>
+        <?php else: ?>
+          <a class="btn primary" href="register.php">Jetzt registrieren</a>
+          <a class="btn light" href="login.php">Einloggen</a>
+        <?php endif; ?>
       </div>
 
-      <nav class="header-actions">
-        <a class="header-link" href="info.php">Ablauf</a>
-        <?php if ($isLoggedIn): ?>
-          <span class="user-name"><?= htmlspecialchars($patientName) ?></span>
-          <a class="header-button" href="booking.php">Termin buchen</a>
-          <a class="header-link" href="logout.php">Logout</a>
-        <?php else: ?>
-          <a class="header-link" href="login.php">Einloggen</a>
-          <a class="header-button" href="register.php">Registrieren</a>
-        <?php endif; ?>
-      </nav>
-    </header>
+      <div class="badges">
+        <span>✓ nur mit Patientenkonto</span>
+        <span>✓ freie Termine sichtbar</span>
+        <span>✓ direkte Bestätigung</span>
+      </div>
+    </section>
 
-    <main>
-      <section class="landing-hero refined-hero">
-        <div class="landing-copy">
-          <p class="eyebrow">Online-Terminbuchung</p>
-          <h2>Ihr Arzttermin in wenigen Klicks.</h2>
-          <p class="landing-text">
-            Buchen Sie Ihren Termin bequem online. Registrieren, einloggen, freien Termin auswählen und direkt bestätigen.
-          </p>
+    <section class="steps">
+      <article>
+        <span>1</span>
+        <h2>Konto erstellen</h2>
+        <p>Einmal registrieren, damit Ihre Buchung eindeutig zugeordnet wird.</p>
+      </article>
 
-          <div class="landing-actions">
-            <?php if ($isLoggedIn): ?>
-              <a class="primary-cta" href="booking.php">Termin buchen</a>
-            <?php else: ?>
-              <a class="primary-cta" href="register.php">Jetzt registrieren</a>
-              <a class="secondary-cta" href="login.php">Einloggen</a>
-            <?php endif; ?>
-          </div>
+      <article>
+        <span>2</span>
+        <h2>Termin wählen</h2>
+        <p>Datum und freie Uhrzeit auswählen. Belegte Termine sind gesperrt.</p>
+      </article>
 
-          <div class="trust-row">
-            <span>✓ freie Termine sichtbar</span>
-            <span>✓ nur mit Patientenkonto</span>
-            <span>✓ direkte Bestätigung</span>
-          </div>
-        </div>
+      <article>
+        <span>3</span>
+        <h2>Bestätigung erhalten</h2>
+        <p>Nach der Buchung sehen Sie sofort, dass der Termin gespeichert wurde.</p>
+      </article>
+    </section>
 
-        <div class="landing-visual refined-visual">
-          <div class="phone-preview">
-            <div class="phone-top"></div>
-            <div class="preview-title">Terminbuchung</div>
-            <div class="preview-date">Heute verfügbare Zeiten</div>
-            <div class="preview-slots">
-              <span>08:30</span>
-              <span class="active">09:00</span>
-              <span>10:30</span>
-              <span class="disabled">11:00</span>
-            </div>
-            <div class="preview-confirm">Termin bestätigen</div>
-          </div>
-        </div>
-      </section>
-
-      <section class="quick-flow refined-flow">
-        <article class="flow-card">
-          <span class="flow-number">1</span>
-          <h3>Konto erstellen</h3>
-          <p>Einmal registrieren, damit Ihre Buchung eindeutig zugeordnet werden kann.</p>
-        </article>
-
-        <article class="flow-card">
-          <span class="flow-number">2</span>
-          <h3>Termin wählen</h3>
-          <p>Freie Zeiten auswählen. Bereits belegte Termine sind automatisch gesperrt.</p>
-        </article>
-
-        <article class="flow-card">
-          <span class="flow-number">3</span>
-          <h3>Bestätigung erhalten</h3>
-          <p>Nach der Buchung sehen Sie sofort, dass der Termin gespeichert wurde.</p>
-        </article>
-      </section>
-
-      <section class="soft-footer">
-        <a href="info.php">So funktioniert die Buchung</a>
-        <span>·</span>
-        <a href="admin_login.php">Praxisbereich</a>
-      </section>
-    </main>
-  </div>
+    <footer class="footer-links">
+      
+      <a href="admin_login.php">Praxisbereich</a>
+    </footer>
+  </main>
+  <script src="auto_logout_on_reload.js?v=1"></script>
 </body>
 </html>
