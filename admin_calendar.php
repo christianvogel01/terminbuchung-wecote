@@ -137,8 +137,11 @@ function buildUrl($view, $offset) {
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kalenderansicht – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=80">
+  <link rel="stylesheet" href="mobile.css?v=20">
+  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <header class="topbar">
@@ -190,6 +193,106 @@ function buildUrl($view, $offset) {
           </div>
         </div>
       </div>
+
+      <div class="mobile-calendar-agenda">
+        <h3>Termine in dieser Ansicht</h3>
+
+        <?php if (count($bookings) === 0): ?>
+          <p class="hint">Für diesen Zeitraum sind keine Termine vorhanden.</p>
+        <?php endif; ?>
+
+        <?php foreach ($bookings as $booking): ?>
+          <article class="mobile-agenda-card">
+            <div class="mobile-agenda-date">
+              <strong><?= htmlspecialchars(date("d.m.Y", strtotime($booking["appointment_date"]))) ?></strong>
+              <span><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?> Uhr</span>
+            </div>
+
+            <div class="mobile-agenda-body">
+              <h4><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></h4>
+              <p><?= htmlspecialchars($booking["reason"] ?: "Kein Grund angegeben") ?></p>
+              <small>
+                <?= htmlspecialchars($booking["phone"] ?? "") ?>
+                <?php if (!empty($booking["email"])): ?>
+                  · <?= htmlspecialchars($booking["email"]) ?>
+                <?php endif; ?>
+              </small>
+            </div>
+
+            <div class="mobile-agenda-actions">
+              <a class="small-action" href="edit_booking.php?id=<?= htmlspecialchars($booking["id"]) ?>">Bearbeiten</a>
+
+              <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
+                <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                <button class="danger-action" type="submit">Stornieren</button>
+              </form>
+            </div>
+          </article>
+        <?php endforeach; ?>
+      </div>
+
+      <?php if ($view === "week" || $view === "month"): ?>
+        <div class="mobile-calendar-board">
+          <?php
+            $mobileStart = clone $start;
+            $mobileEnd = clone $end;
+
+            if ($view === "week") {
+                $mobileEnd = clone $start;
+                $mobileEnd->modify("+4 days");
+            }
+
+            $mobileCurrent = clone $mobileStart;
+          ?>
+
+          <?php while ($mobileCurrent <= $mobileEnd): ?>
+            <?php
+              $dateKey = $mobileCurrent->format("Y-m-d");
+              $dayBookings = $bookingsByDate[$dateKey] ?? [];
+              $isToday = $mobileCurrent->format("Y-m-d") === (new DateTime())->format("Y-m-d");
+            ?>
+
+            <article class="mobile-calendar-day-card <?= $isToday ? "is-today" : "" ?>">
+              <div class="mobile-calendar-day-head">
+                <div>
+                  <strong><?= htmlspecialchars(dayNameGerman($mobileCurrent)) ?></strong>
+                  <span><?= htmlspecialchars($mobileCurrent->format("d.m.Y")) ?></span>
+                </div>
+
+                <em><?= count($dayBookings) ?> Termin(e)</em>
+              </div>
+
+              <?php if (count($dayBookings) === 0): ?>
+                <p class="mobile-empty-day">Keine Termine</p>
+              <?php endif; ?>
+
+              <?php foreach ($dayBookings as $booking): ?>
+                <div class="mobile-calendar-mini-event">
+                  <div class="mini-event-time">
+                    <?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?>
+                  </div>
+
+                  <div class="mini-event-info">
+                    <strong><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></strong>
+                    <span><?= htmlspecialchars($booking["reason"] ?: "Kein Grund angegeben") ?></span>
+                  </div>
+
+                  <div class="mini-event-actions">
+                    <a href="edit_booking.php?id=<?= htmlspecialchars($booking["id"]) ?>">Bearbeiten</a>
+
+                    <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
+                      <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                      <button type="submit">Stornieren</button>
+                    </form>
+                  </div>
+                </div>
+              <?php endforeach; ?>
+            </article>
+
+            <?php $mobileCurrent->modify("+1 day"); ?>
+          <?php endwhile; ?>
+        </div>
+      <?php endif; ?>
 
       <?php if ($view === "week"): ?>
         <?php

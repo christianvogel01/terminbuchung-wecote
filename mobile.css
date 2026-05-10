@@ -1,0 +1,543 @@
+
+/* Mobile CSS final */
+
+/* Allgemein Mobile */
+@media (max-width: 760px) {
+  html,
+  body {
+    min-height: 100%;
+    height: auto !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    background: #eef3f9 !important;
+  }
+
+  body {
+    position: static !important;
+  }
+
+  .topbar {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    padding: 14px 16px !important;
+    gap: 12px !important;
+    border-bottom: 1px solid #e5e7eb !important;
+  }
+
+  .brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    min-width: 0 !important;
+  }
+
+  .brand-icon {
+    width: 42px !important;
+    height: 42px !important;
+    min-width: 42px !important;
+    border-radius: 12px !important;
+    font-size: 24px !important;
+  }
+
+  .brand strong {
+    font-size: 18px !important;
+    line-height: 1.05 !important;
+    white-space: nowrap !important;
+  }
+
+  .brand small {
+    font-size: 12px !important;
+    line-height: 1.1 !important;
+  }
+
+  .nav {
+    width: auto !important;
+    margin-left: auto !important;
+    display: flex !important;
+    justify-content: flex-end !important;
+  }
+
+  .profile-menu {
+    width: auto !important;
+    position: relative !important;
+  }
+
+  .profile-button {
+    width: auto !important;
+    min-height: 42px !important;
+    padding: 7px 10px !important;
+    border-radius: 14px !important;
+    gap: 7px !important;
+  }
+
+  .avatar,
+  .profile-button .avatar {
+    width: 30px !important;
+    height: 30px !important;
+    min-width: 30px !important;
+    font-size: 14px !important;
+  }
+
+  .profile-button span:not(.avatar):not(:last-child) {
+    max-width: 90px !important;
+    font-size: 14px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  .profile-dropdown {
+    right: 0 !important;
+    left: auto !important;
+    min-width: 220px !important;
+  }
+
+  main {
+    width: 100% !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .container,
+  .container.wide,
+  .container.narrow {
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 18px 14px !important;
+  }
+
+  .card,
+  .calendar-shell {
+    width: 100% !important;
+    border-radius: 22px !important;
+    box-shadow: 0 14px 32px rgba(17, 24, 39, 0.08) !important;
+  }
+
+  .card {
+    padding: 22px 16px !important;
+  }
+
+  .card h2 {
+    font-size: 24px !important;
+    line-height: 1.2 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .intro-text,
+  .card p {
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  /* Startseite */
+  .hero {
+    padding: 46px 18px 34px !important;
+    text-align: left !important;
+    min-height: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .hero .eyebrow,
+  .eyebrow {
+    text-align: left !important;
+    font-size: 13px !important;
+    letter-spacing: 0.12em !important;
+  }
+
+  .hero h1 {
+    font-size: 42px !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.05em !important;
+    text-align: left !important;
+    max-width: 100% !important;
+    margin: 16px 0 0 !important;
+  }
+
+  .hero-text {
+    font-size: 19px !important;
+    line-height: 1.35 !important;
+    text-align: left !important;
+    max-width: 100% !important;
+    margin-top: 22px !important;
+  }
+
+  .hero-actions {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    margin-top: 30px !important;
+    margin-bottom: 26px !important;
+    width: 100% !important;
+  }
+
+  .hero-actions .btn {
+    width: 100% !important;
+    max-width: none !important;
+    min-height: 56px !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .badges {
+    display: none !important;
+  }
+
+  .steps {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    padding: 0 16px 34px !important;
+    gap: 14px !important;
+    margin-top: 10px !important;
+    margin-bottom: 40px !important;
+  }
+
+  .steps article {
+    display: block !important;
+    padding: 20px !important;
+    border-radius: 18px !important;
+  }
+
+  /* Tabellen ausserhalb Kalender als Karten */
+  .card table,
+  .card thead,
+  .card tbody,
+  .card tr,
+  .card th,
+  .card td {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .card table {
+    min-width: 0 !important;
+    border-collapse: separate !important;
+    border-spacing: 0 !important;
+  }
+
+  .card thead {
+    display: none !important;
+  }
+
+  .card tbody {
+    display: grid !important;
+    gap: 14px !important;
+  }
+
+  .card tr {
+    background: #ffffff !important;
+    border: 1px solid #dde3eb !important;
+    border-radius: 18px !important;
+    padding: 14px !important;
+    box-shadow: 0 10px 24px rgba(17, 24, 39, 0.06) !important;
+  }
+
+  .card td {
+    border: 0 !important;
+    padding: 8px 0 !important;
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    display: grid !important;
+    grid-template-columns: 105px 1fr !important;
+    gap: 10px !important;
+    align-items: start !important;
+  }
+
+  .card td::before {
+    content: attr(data-label);
+    font-weight: 900 !important;
+    color: #5b6475 !important;
+  }
+
+  .card td:empty {
+    display: none !important;
+  }
+
+  .small-action,
+  .danger-action,
+  td button,
+  td a {
+    width: fit-content !important;
+    min-height: 38px !important;
+    padding: 9px 13px !important;
+    font-size: 14px !important;
+    border-radius: 12px !important;
+  }
+
+  .table-action,
+  .footer-action {
+    margin-top: 24px !important;
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  .table-action .btn,
+  .book-btn,
+  .btn.primary {
+    width: 100% !important;
+    max-width: 320px !important;
+    min-height: 52px !important;
+    font-size: 16px !important;
+    border-radius: 16px !important;
+    justify-content: center !important;
+  }
+
+  .dashboard-summary {
+    width: 100% !important;
+    grid-template-columns: 1fr !important;
+    margin: 22px 0 !important;
+    gap: 14px !important;
+  }
+
+  .dashboard-summary div {
+    padding: 20px !important;
+    border-radius: 20px !important;
+  }
+
+  .dashboard-summary strong {
+    font-size: 38px !important;
+  }
+
+  .dashboard-summary span {
+    font-size: 15px !important;
+  }
+
+  /* Kalender Mobile: keine Agenda-Karten */
+  .mobile-calendar-agenda,
+  .mobile-calendar-board {
+    display: none !important;
+  }
+
+  .calendar-shell {
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  .calendar-toolbar {
+    padding: 20px 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 14px !important;
+    min-width: 100% !important;
+  }
+
+  .calendar-toolbar h2 {
+    font-size: 30px !important;
+    line-height: 1.05 !important;
+    margin: 0 !important;
+  }
+
+  .calendar-toolbar p {
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    margin-top: 6px !important;
+  }
+
+  .calendar-controls {
+    display: grid !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  .calendar-view-switch {
+    width: 100% !important;
+    display: grid !important;
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .calendar-view-switch a {
+    text-align: center !important;
+    padding: 10px 8px !important;
+    font-size: 15px !important;
+  }
+
+  .calendar-nav {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 9px !important;
+    width: 100% !important;
+  }
+
+  .calendar-nav .btn {
+    width: 100% !important;
+    min-height: 44px !important;
+    justify-content: center !important;
+    font-size: 15px !important;
+  }
+
+  /* Wochenansicht: ein Tag pro Swipe, Uhrzeiten links sticky */
+  .outlook-calendar {
+    display: grid !important;
+    grid-template-columns: 64px repeat(5, calc(100vw - 110px)) !important;
+    width: max-content !important;
+    min-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .calendar-corner,
+  .calendar-time {
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 6 !important;
+  }
+
+  .calendar-corner {
+    background: #f8fafc !important;
+  }
+
+  .calendar-time {
+    min-height: 94px !important;
+    padding: 12px 8px !important;
+    background: #f8fafc !important;
+    font-size: 15px !important;
+    border-right: 1px solid #e5e7eb !important;
+  }
+
+  .calendar-day-title {
+    min-height: 76px !important;
+    padding: 12px 8px !important;
+    text-align: center !important;
+  }
+
+  .calendar-day-title strong {
+    font-size: 16px !important;
+  }
+
+  .calendar-day-title span {
+    font-size: 13px !important;
+    padding: 5px 9px !important;
+  }
+
+  .calendar-slot {
+    min-height: 94px !important;
+    padding: 7px !important;
+  }
+
+  .calendar-event {
+    border-radius: 13px !important;
+    padding: 9px !important;
+    min-width: 0 !important;
+  }
+
+  .calendar-event .event-time {
+    font-size: 11px !important;
+  }
+
+  .calendar-event strong {
+    font-size: 14px !important;
+    line-height: 1.2 !important;
+  }
+
+  .calendar-event span {
+    font-size: 12px !important;
+  }
+
+  .event-actions {
+    gap: 5px !important;
+  }
+
+  .event-actions a,
+  .event-actions button {
+    font-size: 11px !important;
+    padding: 5px 7px !important;
+  }
+
+  /* Monatsansicht: alle Wochentage sichtbar, kompakter */
+  .month-calendar {
+    display: grid !important;
+    grid-template-columns: repeat(7, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    overflow: visible !important;
+  }
+
+  .month-day-label {
+    padding: 9px 2px !important;
+    font-size: 12px !important;
+    text-align: center !important;
+  }
+
+  .month-day {
+    min-height: 78px !important;
+    padding: 5px !important;
+  }
+
+  .month-day-number {
+    font-size: 12px !important;
+    margin-bottom: 5px !important;
+  }
+
+  .month-event {
+    padding: 4px 5px !important;
+    font-size: 10px !important;
+    border-radius: 7px !important;
+    margin-bottom: 4px !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+  }
+
+  .more-events {
+    font-size: 10px !important;
+  }
+
+  .today-month-day .month-day-number {
+    min-width: 24px !important;
+    height: 24px !important;
+    padding: 0 6px !important;
+  }
+
+  /* Jahresansicht kompakt */
+  .year-calendar {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+    padding: 16px !important;
+  }
+
+  .year-month-card {
+    min-height: auto !important;
+    padding: 18px !important;
+    border-radius: 18px !important;
+  }
+
+  .year-month-card strong {
+    font-size: 22px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .brand strong {
+    font-size: 16px !important;
+  }
+
+  .brand small {
+    font-size: 11px !important;
+  }
+
+  .profile-button span:not(.avatar):not(:last-child) {
+    display: none !important;
+  }
+
+  .hero h1 {
+    font-size: 36px !important;
+  }
+
+  .hero-text {
+    font-size: 17px !important;
+  }
+
+  .card td {
+    grid-template-columns: 95px 1fr !important;
+  }
+
+  .outlook-calendar {
+    grid-template-columns: 58px repeat(5, calc(100vw - 94px)) !important;
+  }
+}

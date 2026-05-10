@@ -91,8 +91,11 @@ $initial = strtoupper(substr($patient["first_name"], 0, 1));
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mein Profil – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=31">
+  <link rel="stylesheet" href="mobile.css?v=20">
+  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <header class="topbar">

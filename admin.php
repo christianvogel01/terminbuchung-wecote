@@ -39,8 +39,11 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Praxis-Dashboard</title>
   <link rel="stylesheet" href="styles.css?v=40">
+  <link rel="stylesheet" href="mobile.css?v=20">
+  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <div class="page">
@@ -101,13 +104,13 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
           <tbody>
             <?php foreach ($bookings as $booking): ?>
               <tr>
-                <td><?= htmlspecialchars($booking["appointment_date"]) ?></td>
-                <td><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?></td>
-                <td><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></td>
-                <td><?= htmlspecialchars($booking["email"]) ?></td>
-                <td><?= htmlspecialchars($booking["phone"] ?? "") ?></td>
-                <td><?= htmlspecialchars($booking["reason"] ?? "") ?></td>
-                <td class="action-cell">
+                <td data-label="Datum"><?= htmlspecialchars($booking["appointment_date"]) ?></td>
+                <td data-label="Zeit"><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?></td>
+                <td data-label="Name"><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></td>
+                <td data-label="E-Mail"><?= htmlspecialchars($booking["email"]) ?></td>
+                <td data-label="Telefon"><?= htmlspecialchars($booking["phone"] ?? "") ?></td>
+                <td data-label="Grund"><?= htmlspecialchars($booking["reason"] ?? "") ?></td>
+                <td data-label="Aktionen" class="action-cell">
                   <a class="small-action" href="edit_booking.php?id=<?= htmlspecialchars($booking["id"]) ?>">Bearbeiten</a>
 
                   <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
@@ -120,7 +123,7 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
 
             <?php if (count($bookings) === 0): ?>
               <tr>
-                <td colspan="7">Noch keine Termine vorhanden.</td>
+                <td data-label="Datum" colspan="7">Noch keine Termine vorhanden.</td>
               </tr>
             <?php endif; ?>
           </tbody>
@@ -144,18 +147,18 @@ $patients = $patientsStmt->fetchAll(PDO::FETCH_ASSOC);
           <tbody>
             <?php foreach ($patients as $patient): ?>
               <tr>
-                <td><?= htmlspecialchars($patient["id"]) ?></td>
-                <td><?= htmlspecialchars($patient["first_name"] . " " . $patient["last_name"]) ?></td>
-                <td><?= htmlspecialchars($patient["email"]) ?></td>
-                <td><?= htmlspecialchars($patient["phone"]) ?></td>
-                <td><?= htmlspecialchars($patient["city"]) ?></td>
-                <td><?= htmlspecialchars($patient["created_at"]) ?></td>
+                <td data-label="Zeit"><?= htmlspecialchars($patient["id"]) ?></td>
+                <td data-label="Name"><?= htmlspecialchars($patient["first_name"] . " " . $patient["last_name"]) ?></td>
+                <td data-label="E-Mail"><?= htmlspecialchars($patient["email"]) ?></td>
+                <td data-label="Telefon"><?= htmlspecialchars($patient["phone"]) ?></td>
+                <td data-label="Grund"><?= htmlspecialchars($patient["city"]) ?></td>
+                <td data-label="Aktionen"><?= htmlspecialchars($patient["created_at"]) ?></td>
               </tr>
             <?php endforeach; ?>
 
             <?php if (count($patients) === 0): ?>
               <tr>
-                <td colspan="6">Noch keine Patienten registriert.</td>
+                <td data-label="Datum" colspan="6">Noch keine Patienten registriert.</td>
               </tr>
             <?php endif; ?>
           </tbody>

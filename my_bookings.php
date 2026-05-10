@@ -49,8 +49,11 @@ function canCancelBooking($date, $time) {
 <html lang="de">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Meine Buchungen – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=31">
+  <link rel="stylesheet" href="mobile.css?v=20">
+  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <header class="topbar">
@@ -107,11 +110,11 @@ function canCancelBooking($date, $time) {
             <?php $canCancel = canCancelBooking($booking["appointment_date"], $booking["appointment_time"]); ?>
 
             <tr>
-              <td><?= htmlspecialchars($booking["appointment_date"]) ?></td>
-              <td><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?></td>
-              <td><?= htmlspecialchars($booking["reason"] ?? "") ?></td>
-              <td><?= htmlspecialchars($booking["created_at"]) ?></td>
-              <td>
+              <td data-label="Datum"><?= htmlspecialchars($booking["appointment_date"]) ?></td>
+              <td data-label="Uhrzeit"><?= htmlspecialchars(substr($booking["appointment_time"], 0, 5)) ?></td>
+              <td data-label="Grund"><?= htmlspecialchars($booking["reason"] ?? "") ?></td>
+              <td data-label="Gebucht am"><?= htmlspecialchars($booking["created_at"]) ?></td>
+              <td data-label="Aktion">
                 <?php if ($canCancel): ?>
                   <form method="POST" action="cancel_my_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
                     <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking["id"]) ?>">
@@ -126,7 +129,7 @@ function canCancelBooking($date, $time) {
 
           <?php if (count($bookings) === 0): ?>
             <tr>
-              <td colspan="5">Sie haben noch keine Termine gebucht.</td>
+              <td data-label="Datum" colspan="5">Sie haben noch keine Termine gebucht.</td>
             </tr>
           <?php endif; ?>
         </tbody>
