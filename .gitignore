@@ -11,3 +11,11 @@ mail_config.php
 db.php
 vendor/
 index_backup.php
+
+# Lokale Backup- und Reparaturdateien
+*.broken_backup
+*.backup
+*.bak
+repair_*.py
+*_backup*
+*.patch

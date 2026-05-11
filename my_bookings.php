@@ -53,7 +53,6 @@ function canCancelBooking($date, $time) {
   <title>Meine Buchungen – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=31">
   <link rel="stylesheet" href="mobile.css?v=301">
-  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <header class="topbar">

@@ -141,7 +141,6 @@ function buildUrl($view, $offset) {
   <title>Kalenderansicht – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=80">
   <link rel="stylesheet" href="mobile.css?v=301">
-  <link rel="stylesheet" href="calendar_fix.css?v=1">
 </head>
 <body>
   <header class="topbar">
