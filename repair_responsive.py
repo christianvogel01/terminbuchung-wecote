@@ -1,4 +1,127 @@
+from pathlib import Path
+import re
 
+# -------------------------
+# 1. admin_calendar.php reinigen und mobile Wochenansicht ergänzen
+# -------------------------
+
+p = Path("admin_calendar.php")
+text = p.read_text()
+
+# Alte mobile Agenda entfernen
+start = text.find('      <div class="mobile-calendar-agenda">')
+end_marker = '      <?php if ($view === "week"): ?>'
+
+if start != -1:
+    end = text.find(end_marker, start)
+    if end != -1:
+        text = text[:start] + text[end:]
+
+# Alte mobile-calendar-board entfernen
+text = re.sub(
+    r'\s*<\?php if \(\$view === "week" \|\| \$view === "month"\): \?>\s*<div class="mobile-calendar-board">.*?</div>\s*<\?php endif; \?>',
+    '\n',
+    text,
+    flags=re.DOTALL
+)
+
+# Alte calendar-scroll Wrapper entfernen, falls vorhanden
+text = text.replace('      <div class="calendar-scroll">\n', '')
+text = text.replace('      </div>\n    </section>\n  </main>', '    </section>\n  </main>')
+
+mobile_week = r'''      <?php if ($view === "week"): ?>
+        <div class="mobile-week-calendar">
+          <?php
+            $mobileSlots = [
+              "08:00", "08:30", "09:00", "09:30",
+              "10:00", "10:30", "11:00", "11:30",
+              "14:00", "14:30", "15:00", "15:30",
+              "16:00", "16:30", "17:00", "17:30"
+            ];
+
+            $mobileDays = [];
+            $mobileDay = clone $start;
+
+            for ($i = 0; $i < 5; $i++) {
+              $mobileDays[] = clone $mobileDay;
+              $mobileDay->modify("+1 day");
+            }
+          ?>
+
+          <div class="mobile-week-grid">
+            <div class="mobile-week-times">
+              <div class="mobile-week-time-head"></div>
+
+              <?php foreach ($mobileSlots as $slot): ?>
+                <div class="mobile-week-time"><?= htmlspecialchars($slot) ?></div>
+              <?php endforeach; ?>
+            </div>
+
+            <div class="mobile-week-days-scroll">
+              <div class="mobile-week-days">
+                <?php foreach ($mobileDays as $day): ?>
+                  <?php
+                    $dateKey = $day->format("Y-m-d");
+                    $isToday = $dateKey === (new DateTime())->format("Y-m-d");
+                  ?>
+
+                  <div class="mobile-week-day">
+                    <div class="mobile-week-day-head <?= $isToday ? "is-today" : "" ?>">
+                      <strong><?= htmlspecialchars(dayNameGerman($day)) ?></strong>
+                      <span><?= htmlspecialchars($day->format("d.m.")) ?></span>
+                    </div>
+
+                    <?php foreach ($mobileSlots as $slot): ?>
+                      <div class="mobile-week-slot">
+                        <?php foreach ($bookings as $booking): ?>
+                          <?php
+                            $bookingDate = $booking["appointment_date"] ?? "";
+                            $bookingTime = substr((string)($booking["appointment_time"] ?? ""), 0, 5);
+                          ?>
+
+                          <?php if ($bookingDate === $dateKey && $bookingTime === $slot): ?>
+                            <article class="mobile-week-event">
+                              <strong><?= htmlspecialchars($bookingTime) ?></strong>
+                              <span><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></span>
+                              <em><?= htmlspecialchars($booking["reason"] ?: "Termin") ?></em>
+
+                              <div class="mobile-week-event-actions">
+                                <a href="edit_booking.php?id=<?= htmlspecialchars($booking["id"]) ?>">Bearbeiten</a>
+
+                                <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
+                                  <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                                  <button type="submit">Stornieren</button>
+                                </form>
+                              </div>
+                            </article>
+                          <?php endif; ?>
+                        <?php endforeach; ?>
+                      </div>
+                    <?php endforeach; ?>
+                  </div>
+                <?php endforeach; ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      <?php endif; ?>
+
+'''
+
+if "mobile-week-calendar" not in text:
+    marker = '      <?php if ($view === "week"): ?>'
+    if marker not in text:
+        raise SystemExit("Marker für Wochenansicht nicht gefunden.")
+    text = text.replace(marker, mobile_week + marker, 1)
+
+p.write_text(text)
+
+
+# -------------------------
+# 2. mobile.css sauber neu schreiben
+# -------------------------
+
+mobile_css = r'''
 /* Responsive Design
    Desktop: styles.css
    Tablet: Tabellen bleiben Tabellen
@@ -634,98 +757,27 @@
     grid-template-columns: repeat(5, calc(100vw - 104px));
   }
 }
+'''
+
+Path("mobile.css").write_text(mobile_css)
 
 
-/* FINAL MOBILE POLISH START */
-@media (max-width: 760px) {
-  /* Startseite: Praxisbereich-Link unten sichtbar */
-  .footer-links {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    padding: 22px 16px 34px !important;
-    margin-top: 8px !important;
-  }
+# -------------------------
+# 3. CSS-Version erhöhen
+# -------------------------
 
-  .footer-links a {
-    display: inline-flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 46px !important;
-    padding: 0 18px !important;
-    border-radius: 14px !important;
-    background: #ffffff !important;
-    border: 1px solid #dbe3ef !important;
-    color: #173f9f !important;
-    font-weight: 900 !important;
-    text-decoration: none !important;
-    box-shadow: 0 8px 20px rgba(17, 24, 39, 0.06) !important;
-  }
+for file in Path(".").glob("*.php"):
+    content = file.read_text()
 
-  /* Login/Register Buttons: mittig und nicht unnatürlich breit */
-  form .btn,
-  form button[type="submit"],
-  .form-actions .btn {
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
+    if "mobile.css" not in content:
+        content = re.sub(
+            r'(<link rel="stylesheet" href="styles\.css[^"]*">)',
+            r'\1' + "\n  " + '<link rel="stylesheet" href="mobile.css?v=300">',
+            content
+        )
+    else:
+        content = re.sub(r'mobile\.css\?v=\d+', 'mobile.css?v=300', content)
 
-  .card form > .btn,
-  .card form > button[type="submit"] {
-    width: 100% !important;
-    max-width: 340px !important;
-  }
+    file.write_text(content)
 
-  /* Mobiler Wochenkalender: Termine bleiben innerhalb der Zeit-Zeile */
-  .mobile-week-time,
-  .mobile-week-slot {
-    height: 128px !important;
-    min-height: 128px !important;
-  }
-
-  .mobile-week-slot {
-    overflow: hidden !important;
-    padding: 8px !important;
-  }
-
-  .mobile-week-event {
-    width: 100% !important;
-    max-width: 100% !important;
-    height: 100% !important;
-    max-height: 112px !important;
-    overflow: hidden !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important;
-    box-sizing: border-box !important;
-  }
-
-  .mobile-week-event strong {
-    flex: 0 0 auto !important;
-  }
-
-  .mobile-week-event span,
-  .mobile-week-event em {
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    white-space: nowrap !important;
-  }
-
-  .mobile-week-event-actions {
-    margin-top: auto !important;
-    flex-wrap: nowrap !important;
-    overflow: hidden !important;
-  }
-
-  .mobile-week-event-actions a,
-  .mobile-week-event-actions button {
-    white-space: nowrap !important;
-    font-size: 10px !important;
-    padding: 6px 7px !important;
-  }
-}
-/* FINAL MOBILE POLISH END */
-
+print("Responsive Repair abgeschlossen.")

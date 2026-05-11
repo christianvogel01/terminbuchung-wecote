@@ -78,8 +78,7 @@ $currentTime = substr($booking["appointment_time"], 0, 5);
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Termin bearbeiten – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=100">
-  <link rel="stylesheet" href="mobile.css?v=20">
-  <link rel="stylesheet" href="calendar_fix.css?v=1">
+  <link rel="stylesheet" href="mobile.css?v=301">
 </head>
 <body>
   <header class="topbar">

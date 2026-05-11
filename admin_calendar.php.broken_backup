@@ -140,8 +140,7 @@ function buildUrl($view, $offset) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kalenderansicht – Praxis Dr. Müller</title>
   <link rel="stylesheet" href="styles.css?v=80">
-  <link rel="stylesheet" href="mobile.css?v=301">
-  <link rel="stylesheet" href="calendar_fix.css?v=1">
+  <link rel="stylesheet" href="mobile.css?v=110">
 </head>
 <body>
   <header class="topbar">
@@ -194,83 +193,7 @@ function buildUrl($view, $offset) {
         </div>
       </div>
 
-      <?php if ($view === "week"): ?>
-        <div class="mobile-week-calendar">
-          <?php
-            $mobileSlots = [
-              "08:00", "08:30", "09:00", "09:30",
-              "10:00", "10:30", "11:00", "11:30",
-              "14:00", "14:30", "15:00", "15:30",
-              "16:00", "16:30", "17:00", "17:30"
-            ];
-
-            $mobileDays = [];
-            $mobileDay = clone $start;
-
-            for ($i = 0; $i < 5; $i++) {
-              $mobileDays[] = clone $mobileDay;
-              $mobileDay->modify("+1 day");
-            }
-          ?>
-
-          <div class="mobile-week-grid">
-            <div class="mobile-week-times">
-              <div class="mobile-week-time-head"></div>
-
-              <?php foreach ($mobileSlots as $slot): ?>
-                <div class="mobile-week-time"><?= htmlspecialchars($slot) ?></div>
-              <?php endforeach; ?>
-            </div>
-
-            <div class="mobile-week-days-scroll">
-              <div class="mobile-week-days">
-                <?php foreach ($mobileDays as $day): ?>
-                  <?php
-                    $dateKey = $day->format("Y-m-d");
-                    $isToday = $dateKey === (new DateTime())->format("Y-m-d");
-                  ?>
-
-                  <div class="mobile-week-day">
-                    <div class="mobile-week-day-head <?= $isToday ? "is-today" : "" ?>">
-                      <strong><?= htmlspecialchars(dayNameGerman($day)) ?></strong>
-                      <span><?= htmlspecialchars($day->format("d.m.")) ?></span>
-                    </div>
-
-                    <?php foreach ($mobileSlots as $slot): ?>
-                      <div class="mobile-week-slot">
-                        <?php foreach ($bookings as $booking): ?>
-                          <?php
-                            $bookingDate = $booking["appointment_date"] ?? "";
-                            $bookingTime = substr((string)($booking["appointment_time"] ?? ""), 0, 5);
-                          ?>
-
-                          <?php if ($bookingDate === $dateKey && $bookingTime === $slot): ?>
-                            <article class="mobile-week-event">
-                              <strong><?= htmlspecialchars($bookingTime) ?></strong>
-                              <span><?= htmlspecialchars($booking["first_name"] . " " . $booking["last_name"]) ?></span>
-                              <em><?= htmlspecialchars($booking["reason"] ?: "Termin") ?></em>
-
-                              <div class="mobile-week-event-actions">
-                                <a href="edit_booking.php?id=<?= htmlspecialchars($booking["id"]) ?>">Bearbeiten</a>
-
-                                <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
-                                  <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
-                                  <button type="submit">Stornieren</button>
-                                </form>
-                              </div>
-                            </article>
-                          <?php endif; ?>
-                        <?php endforeach; ?>
-                      </div>
-                    <?php endforeach; ?>
-                  </div>
-                <?php endforeach; ?>
-              </div>
-            </div>
-          </div>
-        </div>
-      <?php endif; ?>
-
+      <div class="calendar-scroll">
       <?php if ($view === "week"): ?>
         <?php
           $weekDays = [];
@@ -384,6 +307,7 @@ function buildUrl($view, $offset) {
           <?php endfor; ?>
         </div>
       <?php endif; ?>
+      </div>
     </section>
   </main>
 </body>
