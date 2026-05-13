@@ -105,3 +105,4 @@ git pull
 ## Hinweis
 
 Für eine produktive Version wären zusätzliche Massnahmen sinnvoll, zum Beispiel E-Mail-Bestätigungen, ein zeitbasierter Session-Timeout und eine stärkere Absicherung des Praxislogins.
+Branch protection test Wed May 13 18:02:04 CEST 2026
