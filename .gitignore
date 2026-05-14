@@ -18,3 +18,16 @@ repair_*.py
 .env
 local_backup_*/
 setup_backend_security.php
+
+# Playwright
+node_modules/
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
+
+# Playwright
+node_modules/
+test-results/
+playwright-report/
