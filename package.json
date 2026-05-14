@@ -1,0 +1,23 @@
+{
+  "name": "terminbuchung-wecote",
+  "version": "1.0.0",
+  "description": "Diese Webapplikation ermöglicht Patientinnen und Patienten eine Online-Terminbuchung für eine Arztpraxis. Die Anwendung läuft auf einer VM mit Apache, PHP und MariaDB.",
+  "main": "auto_logout_on_reload.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/christianvogel01/terminbuchung-wecote.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/christianvogel01/terminbuchung-wecote/issues"
+  },
+  "homepage": "https://github.com/christianvogel01/terminbuchung-wecote#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^25.7.0"
+  }
+}
