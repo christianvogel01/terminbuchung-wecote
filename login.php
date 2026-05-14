@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once "db.php";
+
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/validation.php";
+require_once __DIR__ . "/includes/csrf.php";
 
 $message = "";
 $messageType = "";
@@ -13,19 +16,23 @@ if (isset($_GET["registered"])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $email = trim($_POST["email"] ?? "");
+    requireCsrfToken();
+
+    $email = validateEmailAddress($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
     $next = $_POST["next"] ?? "";
 
-    if (!$email || !$password) {
+    if ($email === false || !$password) {
         $message = "Bitte geben Sie E-Mail und Passwort ein.";
         $messageType = "error";
     } else {
         $stmt = $pdo->prepare("SELECT * FROM patients WHERE email = :email");
         $stmt->execute([":email" => $email]);
-        $patient = $stmt->fetch(PDO::FETCH_ASSOC);
+        $patient = $stmt->fetch();
 
         if ($patient && password_verify($password, $patient["password_hash"])) {
+            session_regenerate_id(true);
+
             $_SESSION["patient_id"] = $patient["id"];
             $_SESSION["patient_first_name"] = $patient["first_name"];
             $_SESSION["patient_last_name"] = $patient["last_name"];
@@ -37,10 +44,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 header("Location: index.php");
             }
             exit;
-        } else {
-            $message = "Login fehlgeschlagen. Bitte prüfen Sie E-Mail und Passwort.";
-            $messageType = "error";
         }
+
+        $message = "Login fehlgeschlagen. Bitte prüfen Sie E-Mail und Passwort.";
+        $messageType = "error";
     }
 }
 ?>
@@ -91,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <form method="POST" action="login.php">
+          <?= csrfField() ?>
           <input type="hidden" name="next" value="<?= htmlspecialchars($next) ?>">
 
           <label>

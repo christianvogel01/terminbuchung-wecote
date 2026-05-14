@@ -1,17 +1,19 @@
 <?php
 session_start();
-require_once "db.php";
 
-if (!isset($_SESSION["patient_id"])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/helpers.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$patientId = $_SESSION["patient_id"];
-$bookingId = $_POST["booking_id"] ?? "";
+requirePatient();
+requireCsrfToken();
 
-if (!$bookingId) {
-    header("Location: my_bookings.php");
+$patientId = currentPatientId();
+$bookingId = (int)($_POST["booking_id"] ?? 0);
+
+if ($bookingId <= 0) {
+    header("Location: my_bookings.php?error=notfound");
     exit;
 }
 
@@ -25,17 +27,14 @@ $stmt->execute([
     ":patient_id" => $patientId
 ]);
 
-$booking = $stmt->fetch(PDO::FETCH_ASSOC);
+$booking = $stmt->fetch();
 
 if (!$booking) {
     header("Location: my_bookings.php?error=notfound");
     exit;
 }
 
-$appointmentDateTime = strtotime($booking["appointment_date"] . " " . $booking["appointment_time"]);
-$limitDateTime = time() + (24 * 60 * 60);
-
-if ($appointmentDateTime <= $limitDateTime) {
+if (!canCancelBooking($booking["appointment_date"], $booking["appointment_time"])) {
     header("Location: my_bookings.php?error=too_late");
     exit;
 }

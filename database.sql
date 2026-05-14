@@ -76,3 +76,28 @@ CREATE TABLE `patients` (
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-05-06 23:06:58
+
+
+--
+-- Table structure for table `admin_users`
+--
+
+CREATE TABLE IF NOT EXISTS `admin_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `username` varchar(100) NOT NULL,
+  `password_hash` varchar(255) NOT NULL,
+  `active` tinyint(1) NOT NULL DEFAULT 1,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Helpful indexes for booking queries
+--
+
+ALTER TABLE `bookings`
+  ADD INDEX `idx_bookings_date_time` (`appointment_date`, `appointment_time`);
+
+ALTER TABLE `bookings`
+  ADD INDEX `idx_bookings_patient_date_time` (`patient_id`, `appointment_date`, `appointment_time`);

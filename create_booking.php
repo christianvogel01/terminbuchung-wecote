@@ -1,34 +1,34 @@
 <?php
 session_start();
 header("Content-Type: application/json");
-require_once "db.php";
+
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/validation.php";
+require_once __DIR__ . "/includes/helpers.php";
+require_once __DIR__ . "/includes/csrf.php";
+
+requireCsrfTokenJson();
 
 if (!isset($_SESSION["patient_id"])) {
-    http_response_code(401);
-    echo json_encode([
-        "success" => false,
-        "message" => "Bitte melden Sie sich zuerst an."
-    ]);
-    exit;
+    jsonError(401, "Bitte melden Sie sich zuerst an.");
 }
 
-$date = $_POST["date"] ?? "";
-$time = $_POST["time"] ?? "";
-$reason = trim($_POST["reason"] ?? "");
+$date = validateAppointmentDate($_POST["date"] ?? "");
+$time = validateAppointmentTime($_POST["time"] ?? "");
+$reason = sanitizeText($_POST["reason"] ?? "", 500);
 
-$patientId = $_SESSION["patient_id"];
-$firstName = $_SESSION["patient_first_name"];
-$lastName = $_SESSION["patient_last_name"];
-$email = $_SESSION["patient_email"];
-
-if (!$date || !$time) {
-    http_response_code(400);
-    echo json_encode([
-        "success" => false,
-        "message" => "Bitte wählen Sie Datum und Uhrzeit aus."
-    ]);
-    exit;
+if ($date === false) {
+    jsonError(400, "Ungültiges Datum. Bitte wählen Sie einen Werktag in der Zukunft.");
 }
+
+if ($time === false) {
+    jsonError(400, "Ungültige Uhrzeit. Bitte wählen Sie einen gültigen Termin-Slot.");
+}
+
+$patientId = (int)$_SESSION["patient_id"];
+$firstName = $_SESSION["patient_first_name"] ?? "";
+$lastName = $_SESSION["patient_last_name"] ?? "";
+$email = $_SESSION["patient_email"] ?? "";
 
 try {
     $stmt = $pdo->prepare("
@@ -48,22 +48,12 @@ try {
         ":reason" => $reason
     ]);
 
-    echo json_encode([
-        "success" => true,
-        "message" => "Termin erfolgreich gebucht."
-    ]);
+    jsonSuccess("Termin erfolgreich gebucht.");
 } catch (PDOException $e) {
     if ($e->getCode() == 23000) {
-        http_response_code(409);
-        echo json_encode([
-            "success" => false,
-            "message" => "Dieser Termin ist bereits vergeben."
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            "success" => false,
-            "message" => "Beim Speichern ist ein Fehler aufgetreten."
-        ]);
+        jsonError(409, "Dieser Termin ist bereits vergeben.");
     }
+
+    error_log("create_booking Fehler: " . $e->getMessage());
+    jsonError(500, "Beim Speichern ist ein Fehler aufgetreten.");
 }

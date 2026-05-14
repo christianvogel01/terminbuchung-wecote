@@ -1,13 +1,13 @@
 <?php
 session_start();
 
-if (!isset($_SESSION["patient_id"])) {
-    header("Location: login.php?next=booking");
-    exit;
-}
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$patientName = $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_name"];
-$initial = strtoupper(substr($_SESSION["patient_first_name"], 0, 1));
+requirePatient("booking");
+
+$patientName = ($_SESSION["patient_first_name"] ?? "") . " " . ($_SESSION["patient_last_name"] ?? "");
+$initial = strtoupper(substr($_SESSION["patient_first_name"] ?? "P", 0, 1));
 ?>
 <!DOCTYPE html>
 <html lang="de">
@@ -77,6 +77,7 @@ $initial = strtoupper(substr($_SESSION["patient_first_name"], 0, 1));
       <div class="selected-info" id="selectedInfo"></div>
 
       <form id="patientForm">
+        <?= csrfField() ?>
         <p class="intro-text">
           Die Buchung wird für <strong><?= htmlspecialchars($patientName) ?></strong> gespeichert.
         </p>

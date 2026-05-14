@@ -1,15 +1,16 @@
 <?php
 session_start();
-require_once "db.php";
 
-if (!isset($_SESSION["admin_logged_in"])) {
-    header("Location: admin_login.php");
-    exit;
-}
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/validation.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$id = $_GET["id"] ?? $_POST["id"] ?? "";
+requireAdmin();
 
-if (!$id) {
+$id = (int)($_GET["id"] ?? $_POST["id"] ?? 0);
+
+if ($id <= 0) {
     header("Location: admin.php");
     exit;
 }
@@ -18,12 +19,14 @@ $message = "";
 $messageType = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $date = $_POST["appointment_date"] ?? "";
-    $time = $_POST["appointment_time"] ?? "";
-    $reason = trim($_POST["reason"] ?? "");
+    requireCsrfToken();
 
-    if (!$date || !$time) {
-        $message = "Datum und Uhrzeit sind Pflichtfelder.";
+    $date = validateAppointmentDate($_POST["appointment_date"] ?? "");
+    $time = validateAppointmentTime($_POST["appointment_time"] ?? "");
+    $reason = sanitizeText($_POST["reason"] ?? "", 500);
+
+    if ($date === false || $time === false) {
+        $message = "Ungültiges Datum oder ungültige Uhrzeit.";
         $messageType = "error";
     } else {
         try {
@@ -49,6 +52,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $message = "Dieser Termin ist bereits vergeben.";
                 $messageType = "error";
             } else {
+                error_log("edit_booking Fehler: " . $e->getMessage());
                 $message = "Der Termin konnte nicht gespeichert werden.";
                 $messageType = "error";
             }
@@ -62,7 +66,7 @@ $stmt = $pdo->prepare("
     WHERE id = :id
 ");
 $stmt->execute([":id" => $id]);
-$booking = $stmt->fetch(PDO::FETCH_ASSOC);
+$booking = $stmt->fetch();
 
 if (!$booking) {
     header("Location: admin.php");
@@ -120,6 +124,7 @@ $currentTime = substr($booking["appointment_time"], 0, 5);
 
       <form method="POST" action="edit_booking.php">
         <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+        <?= csrfField() ?>
 
         <div class="date-box">
           <label for="editDateInput">Wählen Sie ein Datum für den Arzttermin</label>

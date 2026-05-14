@@ -1,15 +1,16 @@
 <?php
 session_start();
-require_once "db.php";
 
-if (!isset($_SESSION["admin_logged_in"])) {
-    header("Location: admin_login.php");
-    exit;
-}
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$id = $_POST["id"] ?? "";
+requireAdmin();
+requireCsrfToken();
 
-if ($id) {
+$id = (int)($_POST["id"] ?? 0);
+
+if ($id > 0) {
     $stmt = $pdo->prepare("DELETE FROM bookings WHERE id = :id");
     $stmt->execute([":id" => $id]);
 }
