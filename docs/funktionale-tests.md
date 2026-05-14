@@ -378,3 +378,41 @@ Die wichtigsten Negativfälle wurden berücksichtigt: falsche Login-Daten, ungü
 Die automatisierten Playwright-Tests wurden erfolgreich ausgeführt. Sie ersetzen die manuellen Tests nicht vollständig, liefern aber einen zusätzlichen automatisierten Qualitätsnachweis für die Erreichbarkeit, grundlegende Darstellung und Validierung der Webapplikation.
 
 Insgesamt ist der getestete Stand stabil und für die weitere Projektdokumentation sowie die Abgabe geeignet.
+
+---
+
+## Ergänzung: Vollständiger automatisierter Flow-Test
+
+Zusätzlich zu den Smoke- und Validierungstests wurde ein vollständiger Playwright-Flow-Test erstellt.
+
+Getestet wurden:
+- Registrierung eines eindeutigen Testpatienten
+- Login mit gültigen Patientendaten
+- Zugriff auf geschützte Patientenseiten
+- Terminbuchung eines freien Slots
+- Anzeige des gebuchten Termins unter "Meine Buchungen"
+- Verhinderung einer Doppelbuchung
+- Stornierung eines eigenen Termins
+- Schutz geschützter Seiten nach Logout
+- Erreichbarkeit der Admin-Login-Seite
+- Schutz des Adminbereichs ohne Login
+- Admin-Login mit gültigem Testpasswort
+
+Beim ersten vollständigen Lauf schlug der Admin-Login-Test in Chromium, Firefox und WebKit fehl, weil die lokale Umgebungsvariable PLAYWRIGHT_ADMIN_PASSWORD nicht auf das gültige Admin-Passwort gesetzt war.
+
+Nach Korrektur der Testkonfiguration wurde zuerst der komplette Flow-Test in Chromium ausgeführt:
+
+Running 11 tests using 4 workers
+11 passed (8.8s)
+
+Anschliessend wurde die gesamte Playwright-Test-Suite ausgeführt:
+
+Running 51 tests using 5 workers
+51 passed (15.8s)
+
+Bewertung:
+Alle automatisierten Tests sind bestanden. Es wurde kein fachlicher Fehler gefunden, der aktuell eine Anpassung an der Webseite erforderlich macht. Der zuerst aufgetretene Fehler war eine Testkonfigurationsfrage und kein Fehler der Webapplikation.
+
+Aktueller Status:
+Bestanden: 51 / 51
+Fehlgeschlagen: 0 / 51
