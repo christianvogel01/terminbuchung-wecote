@@ -1,28 +1,42 @@
 <?php
 session_start();
-require_once "db.php";
+
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/validation.php";
+require_once __DIR__ . "/includes/csrf.php";
 
 $message = "";
 $messageType = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $firstName = trim($_POST["first_name"] ?? "");
-    $lastName = trim($_POST["last_name"] ?? "");
-    $birthdate = trim($_POST["birthdate"] ?? "");
-    $phone = trim($_POST["phone"] ?? "");
-    $street = trim($_POST["street"] ?? "");
-    $postalCode = trim($_POST["postal_code"] ?? "");
-    $city = trim($_POST["city"] ?? "");
-    $insuranceNumber = trim($_POST["insurance_number"] ?? "");
-    $email = trim($_POST["email"] ?? "");
+    requireCsrfToken();
+
+    $firstName = validateRequiredText($_POST["first_name"] ?? "", 100);
+    $lastName = validateRequiredText($_POST["last_name"] ?? "", 100);
+    $birthdate = validateBirthdate($_POST["birthdate"] ?? "");
+    $phone = validatePhone($_POST["phone"] ?? "");
+    $street = validateRequiredText($_POST["street"] ?? "", 150);
+    $postalCode = validatePostalCode($_POST["postal_code"] ?? "");
+    $city = validateRequiredText($_POST["city"] ?? "", 100);
+    $insuranceNumber = validateRequiredText($_POST["insurance_number"] ?? "", 100);
+    $email = validateEmailAddress($_POST["email"] ?? "");
     $password = $_POST["password"] ?? "";
     $passwordConfirm = $_POST["password_confirm"] ?? "";
 
-    if (!$firstName || !$lastName || !$birthdate || !$phone || !$street || !$postalCode || !$city || !$insuranceNumber || !$email || !$password || !$passwordConfirm) {
-        $message = "Bitte füllen Sie alle Pflichtfelder aus.";
-        $messageType = "error";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
+    if (
+        $firstName === false ||
+        $lastName === false ||
+        $birthdate === false ||
+        $phone === false ||
+        $street === false ||
+        $postalCode === false ||
+        $city === false ||
+        $insuranceNumber === false ||
+        $email === false ||
+        !$password ||
+        !$passwordConfirm
+    ) {
+        $message = "Bitte prüfen Sie die eingegebenen Daten.";
         $messageType = "error";
     } elseif (strlen($password) < 6) {
         $message = "Das Passwort muss mindestens 6 Zeichen lang sein.";
@@ -61,6 +75,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $message = "Diese E-Mail-Adresse ist bereits registriert.";
                 $messageType = "error";
             } else {
+                error_log("register Fehler: " . $e->getMessage());
                 $message = "Die Registrierung konnte nicht gespeichert werden.";
                 $messageType = "error";
             }
@@ -115,6 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <form method="POST" action="register.php">
+          <?= csrfField() ?>
           <h3>Persönliche Daten</h3>
 
           <div class="form-grid">

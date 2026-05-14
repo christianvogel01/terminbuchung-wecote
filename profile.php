@@ -1,32 +1,42 @@
 <?php
 session_start();
-require_once "db.php";
 
-if (!isset($_SESSION["patient_id"])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/validation.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$patientId = $_SESSION["patient_id"];
+requirePatient();
+
+$patientId = currentPatientId();
 $message = "";
 $messageType = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    $firstName = trim($_POST["first_name"] ?? "");
-    $lastName = trim($_POST["last_name"] ?? "");
-    $birthdate = trim($_POST["birthdate"] ?? "");
-    $phone = trim($_POST["phone"] ?? "");
-    $street = trim($_POST["street"] ?? "");
-    $postalCode = trim($_POST["postal_code"] ?? "");
-    $city = trim($_POST["city"] ?? "");
-    $insuranceNumber = trim($_POST["insurance_number"] ?? "");
-    $email = trim($_POST["email"] ?? "");
+    requireCsrfToken();
 
-    if (!$firstName || !$lastName || !$birthdate || !$phone || !$street || !$postalCode || !$city || !$insuranceNumber || !$email) {
-        $message = "Bitte füllen Sie alle Pflichtfelder aus.";
-        $messageType = "error";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Bitte geben Sie eine gültige E-Mail-Adresse ein.";
+    $firstName = validateRequiredText($_POST["first_name"] ?? "", 100);
+    $lastName = validateRequiredText($_POST["last_name"] ?? "", 100);
+    $birthdate = validateBirthdate($_POST["birthdate"] ?? "");
+    $phone = validatePhone($_POST["phone"] ?? "");
+    $street = validateRequiredText($_POST["street"] ?? "", 150);
+    $postalCode = validatePostalCode($_POST["postal_code"] ?? "");
+    $city = validateRequiredText($_POST["city"] ?? "", 100);
+    $insuranceNumber = validateRequiredText($_POST["insurance_number"] ?? "", 100);
+    $email = validateEmailAddress($_POST["email"] ?? "");
+
+    if (
+        $firstName === false ||
+        $lastName === false ||
+        $birthdate === false ||
+        $phone === false ||
+        $street === false ||
+        $postalCode === false ||
+        $city === false ||
+        $insuranceNumber === false ||
+        $email === false
+    ) {
+        $message = "Bitte prüfen Sie die eingegebenen Daten.";
         $messageType = "error";
     } else {
         try {
@@ -67,6 +77,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($e->getCode() == 23000) {
                 $message = "Diese E-Mail-Adresse wird bereits verwendet.";
             } else {
+                error_log("profile Fehler: " . $e->getMessage());
                 $message = "Profil konnte nicht gespeichert werden.";
             }
             $messageType = "error";
@@ -76,7 +87,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 $stmt = $pdo->prepare("SELECT * FROM patients WHERE id = :id");
 $stmt->execute([":id" => $patientId]);
-$patient = $stmt->fetch(PDO::FETCH_ASSOC);
+$patient = $stmt->fetch();
 
 if (!$patient) {
     session_destroy();
@@ -135,6 +146,7 @@ $initial = strtoupper(substr($patient["first_name"], 0, 1));
       <?php endif; ?>
 
       <form method="POST" action="profile.php">
+        <?= csrfField() ?>
         <h3>Persönliche Daten</h3>
 
         <div class="form-grid">

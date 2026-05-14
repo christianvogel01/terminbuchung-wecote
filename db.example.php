@@ -1,17 +1,8 @@
 <?php
-$host = "localhost";
-$dbname = "terminbuchung";
-$username = "terminuser";
-$password = "HIER_PASSWORT_EINTRAGEN";
 
-try {
-    $pdo = new PDO(
-        "mysql:host=$host;dbname=$dbname;charset=utf8mb4",
-        $username,
-        $password
-    );
+/**
+ * Beispiel-Konfiguration.
+ * Die echte Konfiguration liegt in .env und wird nicht committed.
+ */
 
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Datenbankverbindung fehlgeschlagen.");
-}
+require_once __DIR__ . "/includes/db.php";

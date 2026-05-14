@@ -1,15 +1,16 @@
 <?php
 session_start();
-require_once "db.php";
 
-if (!isset($_SESSION["patient_id"])) {
-    header("Location: login.php");
-    exit;
-}
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/helpers.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-$patientId = $_SESSION["patient_id"];
-$patientName = $_SESSION["patient_first_name"] . " " . $_SESSION["patient_last_name"];
-$initial = strtoupper(substr($_SESSION["patient_first_name"], 0, 1));
+requirePatient();
+
+$patientId = currentPatientId();
+$patientName = ($_SESSION["patient_first_name"] ?? "") . " " . ($_SESSION["patient_last_name"] ?? "");
+$initial = strtoupper(substr($_SESSION["patient_first_name"] ?? "P", 0, 1));
 
 $stmt = $pdo->prepare("
     SELECT id, appointment_date, appointment_time, reason, created_at
@@ -18,7 +19,7 @@ $stmt = $pdo->prepare("
     ORDER BY appointment_date, appointment_time
 ");
 $stmt->execute([":patient_id" => $patientId]);
-$bookings = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$bookings = $stmt->fetchAll();
 
 $message = "";
 $messageType = "";
@@ -36,13 +37,6 @@ if (isset($_GET["error"]) && $_GET["error"] === "too_late") {
 if (isset($_GET["error"]) && $_GET["error"] === "notfound") {
     $message = "Der Termin wurde nicht gefunden.";
     $messageType = "error";
-}
-
-function canCancelBooking($date, $time) {
-    $appointmentTimestamp = strtotime($date . " " . $time);
-    $limitTimestamp = time() + (24 * 60 * 60);
-
-    return $appointmentTimestamp > $limitTimestamp;
 }
 ?>
 <!DOCTYPE html>
@@ -117,6 +111,7 @@ function canCancelBooking($date, $time) {
                 <?php if ($canCancel): ?>
                   <form method="POST" action="cancel_my_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
                     <input type="hidden" name="booking_id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                    <?= csrfField() ?>
                     <button class="danger-action" type="submit">Stornieren</button>
                   </form>
                 <?php else: ?>

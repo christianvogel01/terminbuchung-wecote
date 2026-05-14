@@ -1,11 +1,10 @@
 <?php
 session_start();
-require_once "db.php";
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/auth.php";
+require_once __DIR__ . "/includes/csrf.php";
 
-if (!isset($_SESSION["admin_logged_in"])) {
-    header("Location: admin_login.php");
-    exit;
-}
+requireAdmin();
 
 $view = $_GET["view"] ?? "week";
 $allowedViews = ["week", "month", "year"];
@@ -254,6 +253,7 @@ function buildUrl($view, $offset) {
 
                                 <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
                                   <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                                  <?= csrfField() ?>
                                   <button type="submit">Stornieren</button>
                                 </form>
                               </div>
@@ -312,6 +312,7 @@ function buildUrl($view, $offset) {
 
                       <form method="POST" action="delete_booking.php" onsubmit="return confirm('Termin wirklich stornieren?');">
                         <input type="hidden" name="id" value="<?= htmlspecialchars($booking["id"]) ?>">
+                                  <?= csrfField() ?>
                         <button type="submit">Stornieren</button>
                       </form>
                     </div>

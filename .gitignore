@@ -5,13 +5,9 @@ mail_config.php
 
 /vendor/
 test_mail.php
-true,
-terminbuchung-wecote/
-mail_config.php
 db.php
 vendor/
 index_backup.php
-
 # Lokale Backup- und Reparaturdateien
 *.broken_backup
 *.backup
@@ -19,3 +15,6 @@ index_backup.php
 repair_*.py
 *_backup*
 *.patch
+.env
+local_backup_*/
+setup_backend_security.php

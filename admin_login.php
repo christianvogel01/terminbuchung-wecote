@@ -1,18 +1,37 @@
 <?php
 session_start();
 
+require_once __DIR__ . "/includes/db.php";
+require_once __DIR__ . "/includes/csrf.php";
+
 $message = "";
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    requireCsrfToken();
+
     $password = $_POST["password"] ?? "";
 
-    if ($password === "praxis123") {
+    $stmt = $pdo->query("
+        SELECT id, username, password_hash
+        FROM admin_users
+        WHERE active = 1
+        ORDER BY id
+        LIMIT 1
+    ");
+
+    $adminUser = $stmt->fetch();
+
+    if ($adminUser && password_verify($password, $adminUser["password_hash"])) {
+        session_regenerate_id(true);
+
         $_SESSION["admin_logged_in"] = true;
+        $_SESSION["admin_user_id"] = $adminUser["id"];
+
         header("Location: admin.php");
         exit;
-    } else {
-        $message = "Falsches Passwort.";
     }
+
+    $message = "Falsches Passwort.";
 }
 ?>
 <!DOCTYPE html>
@@ -60,14 +79,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         <?php endif; ?>
 
         <form method="POST" action="admin_login.php">
+          <?= csrfField() ?>
           <label>Passwort
             <input type="password" name="password" required>
           </label>
 
           <button class="book-btn" type="submit">Einloggen</button>
         </form>
-
-        <p class="center-note">Demo-Passwort: <strong>praxis123</strong></p>
       </section>
     </main>
   </div>
