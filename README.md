@@ -80,6 +80,15 @@ Die Datei `db.php` enthält echte Zugangsdaten und wird nicht im Git-Repository 
 
 Termine können nur von eingeloggten Patientinnen und Patienten erstellt werden. Die Praxis kann Termine einsehen, bearbeiten und stornieren.
 
+## Testing
+
+Die Testdokumentation befindet sich im Ordner `/testing`.
+
+Durchgeführt wurden:
+- manuelle funktionale Tests
+- explorative Tests
+- Analyse möglicher automatisierter Tests
+
 ## Deployment
 
 Die Anwendung läuft auf der VM im Apache-Webserver-Verzeichnis:
