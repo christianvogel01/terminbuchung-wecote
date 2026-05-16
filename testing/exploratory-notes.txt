@@ -1,0 +1,34 @@
+Explorative Testing Notes
+
+Datum:
+[Datum einfügen]
+
+Durchgeführt von:
+[Name der externen Testperson]
+
+Ziel:
+Freie Untersuchung möglicher Fehler innerhalb der Webapplikation.
+
+Getestete Bereiche:
+- Login
+- Registrierung
+- Terminbuchung
+- Kalenderansicht
+- Zugriffsschutz
+
+Durchgeführte explorative Tests:
+- Login mit leeren Feldern getestet
+- Login mit falschem Passwort getestet
+- Mehrfachklick auf "Termin buchen" getestet
+- Browser-Reload während Terminbuchung getestet
+- Zugriff auf geschützte Seiten ohne Login getestet
+- Versuch einer Doppelbuchung getestet
+
+Beobachtungen:
+- Leere Eingaben wurden korrekt validiert
+- Nicht eingeloggte Benutzer wurden auf Login-Seite umgeleitet
+- Doppelbuchungen wurden verhindert
+- Keine Systemabstürze festgestellt
+
+Gefundene Probleme:
+- Keine kritischen Fehler festgestellt
